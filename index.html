@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>QGIS2leaf webmap</title>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+		<link rel="stylesheet" href="css/MarkerCluster.css" />
+		<link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+		<link rel="stylesheet" type="text/css" href="css/own_style.css">
+		<link rel="stylesheet" href="css/label.css" />
+		<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+		<script src="js/leaflet-hash.js"></script>
+		<script src="js/label.js"></script>
+		<script src="js/Autolinker.min.js"></script>
+		<script src="js/leaflet.markercluster.js"></script>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	</head>
+	<body>
+		<div id="map"></div>
+		<script src="data/exp_LokasiApartemen.js"></script>
+		<script src="data/exp_JalanProvinsi.js"></script>
+		<script src="data/exp_Jalan.js"></script>
+		<script src="data/exp_Sungai.js"></script>
+		<script>
+		var map = L.map('map', {
+			zoomControl:true, maxZoom:19
+		}).fitBounds([[-7.79094216072,110.280220591],[-7.70919326459,110.423423422]]);
+		var hash = new L.Hash(map);
+		var additional_attrib = 'created w. <a href="https://github.com/geolicious/qgis2leaf" target ="_blank">qgis2leaf</a> by <a href="http://www.geolicious.de" target ="_blank">Geolicious</a> & contributors<br>';
+		var feature_group = new L.featureGroup([]);
+		var raster_group = new L.LayerGroup([]);
+		var basemap_0 = L.tileLayer('http://a.tile.stamen.com/terrain/{z}/{x}/{y}.png', { 
+			attribution: additional_attrib + 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data: &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+		});	
+		basemap_0.addTo(map);	
+		var layerOrder=new Array();
+		var img_CitraDIY= 'data/exp_CitraDIY.png';
+		var img_bounds_CitraDIY = [[-8.20422788521,110.001284957],[-7.54193908378,110.83495566]];
+		var overlay_CitraDIY = new L.imageOverlay(img_CitraDIY, img_bounds_CitraDIY).addTo(map);
+		raster_group.addLayer(overlay_CitraDIY);
+		function pop_Sungai(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">OBJECTID</th><td>' + Autolinker.link(String(feature.properties['OBJECTID'])) + '</td></tr><tr><th scope="row">AREA</th><td>' + Autolinker.link(String(feature.properties['AREA'])) + '</td></tr><tr><th scope="row">PERIMETER</th><td>' + Autolinker.link(String(feature.properties['PERIMETER'])) + '</td></tr><tr><th scope="row">SUNGAI2_</th><td>' + Autolinker.link(String(feature.properties['SUNGAI2_'])) + '</td></tr><tr><th scope="row">SUNGAI2_ID</th><td>' + Autolinker.link(String(feature.properties['SUNGAI2_ID'])) + '</td></tr><tr><th scope="row">KETERANGAN</th><td>' + Autolinker.link(String(feature.properties['KETERANGAN'])) + '</td></tr><tr><th scope="row">Shape_Leng</th><td>' + Autolinker.link(String(feature.properties['Shape_Leng'])) + '</td></tr><tr><th scope="row">Shape_Area</th><td>' + Autolinker.link(String(feature.properties['Shape_Area'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		function doStyleSungai(feature) {
+				return {
+					color: '#000000',
+					fillColor: '#8ca472',
+					weight: 1.3,
+					dashArray: '',
+					opacity: 1.0,
+					fillOpacity: 1.0
+				};
+
+		}
+		var exp_SungaiJSON = new L.geoJson(exp_Sungai,{
+			onEachFeature: pop_Sungai,
+			style: doStyleSungai
+		});
+		layerOrder[layerOrder.length] = exp_SungaiJSON;
+		for (index = 0; index < layerOrder.length; index++) {
+			feature_group.removeLayer(layerOrder[index]);feature_group.addLayer(layerOrder[index]);
+		}
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_SungaiJSON);
+		function pop_Jalan(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">OBJECTID</th><td>' + Autolinker.link(String(feature.properties['OBJECTID'])) + '</td></tr><tr><th scope="row">OBJECTID_1</th><td>' + Autolinker.link(String(feature.properties['OBJECTID_1'])) + '</td></tr><tr><th scope="row">FID_jalan_</th><td>' + Autolinker.link(String(feature.properties['FID_jalan_'])) + '</td></tr><tr><th scope="row">LAYER</th><td>' + Autolinker.link(String(feature.properties['LAYER'])) + '</td></tr><tr><th scope="row">KETERANGAN</th><td>' + Autolinker.link(String(feature.properties['KETERANGAN'])) + '</td></tr><tr><th scope="row">LENGTH_FEE</th><td>' + Autolinker.link(String(feature.properties['LENGTH_FEE'])) + '</td></tr><tr><th scope="row">SHAPE_LENG</th><td>' + Autolinker.link(String(feature.properties['SHAPE_LENG'])) + '</td></tr><tr><th scope="row">SHAPE_LE_1</th><td>' + Autolinker.link(String(feature.properties['SHAPE_LE_1'])) + '</td></tr><tr><th scope="row">Shape_Le_2</th><td>' + Autolinker.link(String(feature.properties['Shape_Le_2'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		function doStyleJalan(feature) {
+				return {
+					weight: 1.3,
+					color: '#a781c1',
+					dashArray: '',
+					opacity: 1.0,
+					fillOpacity: 1.0
+				};
+		}
+		var exp_JalanJSON = new L.geoJson(exp_Jalan,{
+			onEachFeature: pop_Jalan,
+			style: doStyleJalan
+		});
+		layerOrder[layerOrder.length] = exp_JalanJSON;
+		for (index = 0; index < layerOrder.length; index++) {
+			feature_group.removeLayer(layerOrder[index]);feature_group.addLayer(layerOrder[index]);
+		}
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_JalanJSON);
+		function pop_JalanProvinsi(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">STATUS_201</th><td>' + Autolinker.link(String(feature.properties['STATUS_201'])) + '</td></tr><tr><th scope="row">ORIG_FID</th><td>' + Autolinker.link(String(feature.properties['ORIG_FID'])) + '</td></tr><tr><th scope="row">No_Ruas</th><td>' + Autolinker.link(String(feature.properties['No_Ruas'])) + '</td></tr><tr><th scope="row">panjang</th><td>' + Autolinker.link(String(feature.properties['panjang'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		function doStyleJalanProvinsi(feature) {
+				return {
+					weight: 1.3,
+					color: '#e31a1c',
+					dashArray: '',
+					opacity: 1.0,
+					fillOpacity: 1.0
+				};
+		}
+		var exp_JalanProvinsiJSON = new L.geoJson(exp_JalanProvinsi,{
+			onEachFeature: pop_JalanProvinsi,
+			style: doStyleJalanProvinsi
+		});
+		layerOrder[layerOrder.length] = exp_JalanProvinsiJSON;
+		for (index = 0; index < layerOrder.length; index++) {
+			feature_group.removeLayer(layerOrder[index]);feature_group.addLayer(layerOrder[index]);
+		}
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_JalanProvinsiJSON);
+		function pop_LokasiApartemen(feature, layer) {					
+			var popupContent = '<table><tr><th scope="row">FID_penggu</th><td>' + Autolinker.link(String(feature.properties['FID_penggu'])) + '</td></tr><tr><th scope="row">FID_Peta_P</th><td>' + Autolinker.link(String(feature.properties['FID_Peta_P'])) + '</td></tr><tr><th scope="row">PL</th><td>' + Autolinker.link(String(feature.properties['PL'])) + '</td></tr><tr><th scope="row">Shape_Area</th><td>' + Autolinker.link(String(feature.properties['Shape_Area'])) + '</td></tr><tr><th scope="row">Peruntukan</th><td>' + Autolinker.link(String(feature.properties['Peruntukan'])) + '</td></tr><tr><th scope="row">Keterangan</th><td>' + Autolinker.link(String(feature.properties['Keterangan'])) + '</td></tr><tr><th scope="row">KW</th><td>' + Autolinker.link(String(feature.properties['KW'])) + '</td></tr><tr><th scope="row">WA</th><td>' + Autolinker.link(String(feature.properties['WA'])) + '</td></tr><tr><th scope="row">TA</th><td>' + Autolinker.link(String(feature.properties['TA'])) + '</td></tr><tr><th scope="row">DH</th><td>' + Autolinker.link(String(feature.properties['DH'])) + '</td></tr><tr><th scope="row">LU</th><td>' + Autolinker.link(String(feature.properties['LU'])) + '</td></tr><tr><th scope="row">KW_1</th><td>' + Autolinker.link(String(feature.properties['KW_1'])) + '</td></tr><tr><th scope="row">WA_1</th><td>' + Autolinker.link(String(feature.properties['WA_1'])) + '</td></tr><tr><th scope="row">TA_1</th><td>' + Autolinker.link(String(feature.properties['TA_1'])) + '</td></tr><tr><th scope="row">DH_1</th><td>' + Autolinker.link(String(feature.properties['DH_1'])) + '</td></tr><tr><th scope="row">SHAPE_Ar_1</th><td>' + Autolinker.link(String(feature.properties['SHAPE_Ar_1'])) + '</td></tr><tr><th scope="row">FID_clip11</th><td>' + Autolinker.link(String(feature.properties['FID_clip11'])) + '</td></tr><tr><th scope="row">STATUS_201</th><td>' + Autolinker.link(String(feature.properties['STATUS_201'])) + '</td></tr><tr><th scope="row">ORIG_FID</th><td>' + Autolinker.link(String(feature.properties['ORIG_FID'])) + '</td></tr><tr><th scope="row">No_Ruas</th><td>' + Autolinker.link(String(feature.properties['No_Ruas'])) + '</td></tr><tr><th scope="row">panjang</th><td>' + Autolinker.link(String(feature.properties['panjang'])) + '</td></tr></table>';
+			layer.bindPopup(popupContent);
+		}
+
+		function doStyleLokasiApartemen(feature) {
+				return {
+					color: '#000000',
+					fillColor: '#4794dc',
+					weight: 1.3,
+					dashArray: '',
+					opacity: 1.0,
+					fillOpacity: 1.0
+				};
+
+		}
+		var exp_LokasiApartemenJSON = new L.geoJson(exp_LokasiApartemen,{
+			onEachFeature: pop_LokasiApartemen,
+			style: doStyleLokasiApartemen
+		});
+		layerOrder[layerOrder.length] = exp_LokasiApartemenJSON;
+		for (index = 0; index < layerOrder.length; index++) {
+			feature_group.removeLayer(layerOrder[index]);feature_group.addLayer(layerOrder[index]);
+		}
+		//add comment sign to hide this layer on the map in the initial view.
+		feature_group.addLayer(exp_LokasiApartemenJSON);
+
+		feature_group.addTo(map);
+		var title = new L.Control();
+		title.onAdd = function (map) {
+			this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+			this.update();
+			return this._div;
+		};
+		title.update = function () {
+			this._div.innerHTML = '<h2>Penentuan Apartemen</h2>Yogyakarta'
+		};
+		title.addTo(map);
+		var legend = L.control({position: 'bottomright'});
+		legend.onAdd = function (map) {
+			var div = L.DomUtil.create('div', 'info legend');
+			div.innerHTML = "<h3>Legend</h3><table></table>";
+    		return div;
+		};
+		legend.addTo(map);
+	var baseMaps = {
+		'Stamen Terrain': basemap_0
+	};
+		L.control.layers(baseMaps,{"LokasiApartemen": exp_LokasiApartemenJSON,"JalanProvinsi": exp_JalanProvinsiJSON,"Jalan": exp_JalanJSON,"Sungai": exp_SungaiJSON,"CitraDIY": overlay_CitraDIY},{collapsed:false}).addTo(map);
+		L.control.scale({options: {position: 'bottomleft',maxWidth: 100,metric: true,imperial: false,updateWhenIdle: false}}).addTo(map);
+	</script>
+</body>
+</html>
